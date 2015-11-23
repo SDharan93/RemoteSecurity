@@ -26,80 +26,36 @@ string intToString(int number){
 	return ss.str();
 }
 
-/*
 string getDateTime(){
 	//get the system time
-	SYSTEMTIME theTime;
-	GetLocalTime(&theTime);
-	//create string to store the date and time
-	string dateTime;
-	//convert year to string
-	string year = intToString(theTime.wYear);
-	//use stringstream to add a leading '0' to the month (ie. 3 -> 03)
-	//we use 'setw(2)' so that we force the string 2 characters wide with a zero in front of it.
-	//if the month is '10' then it will remain '10'
-	std::stringstream m;
-	m<<std::setfill('0')<<std::setw(2)<< theTime.wMonth;
-	string month = m.str();
-	//day
-	std::stringstream d;
-	d<<std::setfill('0')<<std::setw(2)<< theTime.wDay;
-	string day = d.str();
-	//hour
-	std::stringstream hr;
-	hr<<setfill('0')<<std::setw(2)<<theTime.wHour;
-	string hour = hr.str();
-	//minute
-	std::stringstream min;
-	min<<setfill('0')<<std::setw(2)<<theTime.wMinute;
-	string minute = min.str();
-	//second
-	std::stringstream sec;
-	sec<<setfill('0')<<std::setw(2)<<theTime.wSecond;
-	string second = sec.str();
+	time_t rawtime;
+  struct tm * timeinfo;
+  char buffer [50];
+  time (&rawtime);
+  timeinfo = localtime (&rawtime);
+  strftime (buffer,50,"%B %d %G - %r",timeinfo);
 
-	//here we use the year, month, day, hour, minute info to create a custom string
-	//this will be displayed in the bottom left corner of our video feed.
-	dateTime = year + "-" + month + "-" + day + "  " + hour + ":" + minute + ":" + second;
+	stringstream stream;
+	stream << buffer;
 
-	return dateTime;
+	return stream.str();
 }
-string getDateTimeForFile(){
-	//this function does the exact same as "getDateTime()"
-	//however it returns a string that can be used as a filename
-	SYSTEMTIME theTime;
-	GetLocalTime(&theTime);
-	string dateTime;
 
-	string year = intToString(theTime.wYear);
+string getFileDateTime(){
+	//get the system time
+	time_t rawtime;
+  struct tm * timeinfo;
+  char buffer [30];
+  time (&rawtime);
+  timeinfo = localtime (&rawtime);
+  strftime (buffer,30,"%m_%d_%G_%H_%M_%S",timeinfo);
 
-	std::stringstream m;
-	m<<std::setfill('0')<<std::setw(2)<< theTime.wMonth;
-	string month = m.str();
+	stringstream stream;
+	stream << buffer;
 
-	std::stringstream d;
-	d<<std::setfill('0')<<std::setw(2)<< theTime.wDay;
-	string day = d.str();
-
-	std::stringstream hr;
-	hr<<setfill('0')<<std::setw(2)<<theTime.wHour;
-	string hour = hr.str();
-
-	std::stringstream min;
-	min<<setfill('0')<<std::setw(2)<<theTime.wMinute;
-	string minute = min.str();
-
-	std::stringstream sec;
-	sec<<setfill('0')<<std::setw(2)<<theTime.wSecond;
-	string second = sec.str();
-
-	//here we use "_" instead of "-" and ":"
-	//if we try to save a filename with "-" or ":" in it we will get an error.
-	dateTime = year + "_" + month + "_" + day + "_" + hour + "h" + minute + "m" + second + "s";
-
-	return dateTime;
+	return stream.str();
 }
-*/
+
 bool detectMotion(Mat thresholdImage, Mat &cameraFeed){
 	//create motionDetected variable.
 	bool motionDetected = false;
@@ -160,8 +116,6 @@ int main(){
 		return -1;
 	}
 	while(1){
-
-
 		//read first frame
 		capture.read(frame1);
 		//convert frame1 to gray scale for frame differencing
@@ -215,8 +169,9 @@ int main(){
 
 ////////////**STEP 1**//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//draw time stamp to video in bottom left corner. We draw it before we write so that it is written on the video file.
-
-
+		string dateTime = getDateTime();
+		rectangle(frame1, Rect(0,465,290,15), Scalar(255,255,255), -1);
+		putText(frame1, dateTime, Point(0,480), 1, 1, Scalar(0,0,0),2);
 		//if we're in recording mode, write to file
 		if(recording){
 
@@ -226,13 +181,14 @@ int main(){
 
 //////////**STEP 3**///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//Create a unique filename for each video based on the date and time the recording has started
-				string videoFileName = "D:/MyVideo"+intToString(inc)+".avi";
+				//string videoFileName = "SecurityRecording"+intToString(inc)+".avi";
+				string videoFileName = getFileDateTime() + ".avi";
 
 				cout << "File has been opened for writing: " << videoFileName<<endl;
 
 				cout << "Frame Size = " << dWidth << "x" << dHeight << endl;
 
-				oVideoWriter  = VideoWriter(videoFileName, CV_FOURCC('D', 'I', 'V', '3'), 20, frameSize, true);
+				oVideoWriter  = VideoWriter(videoFileName, CV_FOURCC('D', 'I', 'V', '3'), 7, frameSize, true);
 
 				if ( !oVideoWriter.isOpened() )
 				{
@@ -243,8 +199,6 @@ int main(){
 				//reset our variables to false.
 				firstRun = false;
 				startNewRecording = false;
-
-
 			}
 
 			oVideoWriter.write(frame1);
@@ -252,22 +206,17 @@ int main(){
 			//be sure to do this AFTER you write to the file so that "REC" doesn't show up on the recorded video file.
 			//Cut and paste the following line above "oVideoWriter.write(frame1)" to see what I'm talking about.
 			putText(frame1,"REC",Point(0,60),2,2,Scalar(0,0,255),2);
-
-
 		}
-
-
 
 		//check if motion is detected in the video feed.
 		if(motionDetected){
 			//show "MOTION DETECTED" in bottom left corner in green
 			putText(frame1,"MOTION DETECTED",cv::Point(0,420),2,2,cv::Scalar(0,255,0));
+			recording = true;
+		}
 
-//////////**STEP 2**///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//set recording to true since there is motion in the video feed.
-			//else recording should be false.
-
-
+		else {
+			recording = false;
 		}
 		//show our captured frame
 		imshow("Frame1",frame1);
@@ -304,7 +253,6 @@ int main(){
 				}
 			}
 			}
-
 		case 114:
 			//'r' has been pressed.
 			//toggle recording mode
@@ -325,11 +273,7 @@ int main(){
 			//increment video file name
 			inc+=1;
 			break;
-
 		}
-
 	}
-
 	return 0;
-
 }
