@@ -1,9 +1,12 @@
+#include <python2.7/Python.h>
 #include "opencv2/core.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/videoio.hpp"
 #include <iostream>
 #include <time.h>
+#include <stdio.h>
+#include <thread>
 
 using namespace std;
 using namespace cv;
@@ -77,6 +80,17 @@ bool detectMotion(Mat thresholdImage, Mat &cameraFeed){
 	return motionDetected;
 
 }
+
+void messageAlert() {
+	FILE* file;
+
+	Py_SetProgramName("alert.py");
+	Py_Initialize();
+	file = fopen("alert.py","r");
+  PyRun_SimpleFile(file, "alert.py");
+  Py_Finalize();
+}
+
 int main(){
 	//set recording and startNewRecording initially to false.
 	bool recording = false;
@@ -85,9 +99,10 @@ int main(){
 	bool firstRun = true;
 	//if motion is detected in the video feed, we will know to start recording.
 	bool motionDetected = false;
-
 	//pause and resume code (if needed)
 	bool pause = false;
+	//variable for sending a text.
+	bool sendMessage = false;
 	//set debug mode and trackingenabled initially to false
 	//these can be toggled using 'd' and 't'
 	debugMode = false;
@@ -183,11 +198,8 @@ int main(){
 				//Create a unique filename for each video based on the date and time the recording has started
 				//string videoFileName = "SecurityRecording"+intToString(inc)+".avi";
 				string videoFileName = getFileDateTime() + ".avi";
-
 				cout << "File has been opened for writing: " << videoFileName<<endl;
-
 				cout << "Frame Size = " << dWidth << "x" << dHeight << endl;
-
 				oVideoWriter  = VideoWriter(videoFileName, CV_FOURCC('D', 'I', 'V', '3'),10, frameSize, true);
 
 				if ( !oVideoWriter.isOpened() )
@@ -213,10 +225,16 @@ int main(){
 			//show "MOTION DETECTED" in bottom left corner in green
 			putText(frame1,"MOTION DETECTED",cv::Point(0,420),2,2,cv::Scalar(0,255,0));
 			recording = true;
+			sendMessage = true;
 		}
 
 		else {
 			recording = false;
+			if(sendMessage) {
+				sendMessage = false;
+				thread message(messageAlert);
+				message.detach();
+			}
 		}
 		//show our captured frame
 		imshow("Frame1",frame1);
@@ -264,6 +282,14 @@ int main(){
 
 			break;
 
+		case 115:
+		{
+			//'s' has been pressed
+			//send a message through sms
+			thread message(messageAlert);
+			message.detach();
+			break;
+		}
 		case 110:
 			//'n' has been pressed
 			//start new video file
