@@ -3,12 +3,12 @@ CXX ?= g++
 CXXFLAGS += -c -Wall $(shell pkg-config --cflags opencv)
 LDFLAGS += $(shell pkg-config --libs --static opencv)
 
-build: secuirtyCam;
+build: remoteSecurity;
 
-secuirtyCam: securityCam.o;
+remoteSecurity: remoteSecurity.o;
 	$(CXX) $< -o $@ $(LDFLAGS)
 
-securityCam.o: securityCam.cpp;
+remoteSecurity.o: remoteSecurity.cpp;
 	$(CXX) $< -o $@ $(CXXFLAGS)
 
-clean: ; rm -f securityCam.o secuirtyCam
+clean: ; rm -f remoteSecurity.o remoteSecurity
