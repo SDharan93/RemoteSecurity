@@ -188,7 +188,7 @@ int main(){
 
 				cout << "Frame Size = " << dWidth << "x" << dHeight << endl;
 
-				oVideoWriter  = VideoWriter(videoFileName, CV_FOURCC('D', 'I', 'V', '3'), 7, frameSize, true);
+				oVideoWriter  = VideoWriter(videoFileName, CV_FOURCC('D', 'I', 'V', '3'),10, frameSize, true);
 
 				if ( !oVideoWriter.isOpened() )
 				{

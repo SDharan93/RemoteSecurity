@@ -12,3 +12,6 @@ remoteSecurity.o: remoteSecurity.cpp;
 	$(CXX) $< -o $@ $(CXXFLAGS)
 
 clean: ; rm -f remoteSecurity.o remoteSecurity
+
+install:
+		sudo pip install twilio
