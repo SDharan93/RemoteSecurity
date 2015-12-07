@@ -1,5 +1,3 @@
-#remoteSecurity
-
 #####This application currently has three features:
 1. Alert user of any detected motion via text.
 2. Record motion and upload the video to a dropbox repo.
