@@ -1,5 +1,4 @@
 #remoteSecurity
->An application that turns your webcam into a remote security camera!
 
 #####This application currently has three features:
 1. Alert user of any detected motion via text.
