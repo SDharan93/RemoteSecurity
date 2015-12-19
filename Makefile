@@ -5,13 +5,7 @@ LDFLAGS += $(shell pkg-config --libs --static opencv)
 PYLINK += -I/usr/include/python2.7
 PYLIB += -lpython2.7
 
-all: venv
-
-venv:
-	virtualenv --python=python3 venv
-
-runVenv:
-	. venv/bin/activate
+all: install
 
 build: remoteSecurity;
 
