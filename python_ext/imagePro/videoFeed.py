@@ -10,15 +10,14 @@ class videoFeed(object):
     ret = False
 
     def __init__(self):
-        self.capture = videoControl().captureCam()
+        self.capture = videoControl()
 
     def readCamera(self):
-        ret, self.frame1 = self.capture.read()
-        self.greyImage1 = cv2.cvtColor(self.frame1, cv2.COLOR_BGR2GRAY)
-        cv2.imshow('grey video feed', self.greyImage1)
+        self.capture.read()
+        self.capture.showGreyFeed()
 
     def close(self):
         self.capture.release()
 
     def inputKey(self):
-        return cv2.waitKey(10) & 0xFF
+        return self.capture.input()
