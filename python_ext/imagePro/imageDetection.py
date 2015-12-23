@@ -10,6 +10,9 @@ class imageDetection(object):
     def __init__(self):
         self.control = imageControl()
 
+    def setImage1(self,image):
+        self.control.setImage1(image)
+
     def thresholdImage(self):
         self.control.threshold()
         self.thresholdImage = self.control.getThresholdImage().copy()

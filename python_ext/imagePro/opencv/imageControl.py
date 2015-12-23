@@ -18,11 +18,17 @@ class imageControl(object):
     def getImage1(self):
         return self.image1
 
+    def showImage1(self):
+        cv2.imshow('image 1 video feed 1', self.image1)
+
     def setImage2(self, image2):
         self.image2 = image2
 
     def getImage2(self):
         return self.image2
+
+    def showImage2(self):
+        cv2.imshow('video feed 2', self.image2)
 
     def difference(self):
         self.differenceImage = cv2.absdiff(self.image1, self.image2)
