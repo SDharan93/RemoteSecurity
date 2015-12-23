@@ -37,7 +37,7 @@ class imageControl(object):
     def getThresholdImage(self):
         return self.thresholdImage
 
-    def findContours(self, thresholdImage):
+    def findContours(self):
         self.contours, self.heirarchy = cv2.findContours(self.thresholdImage, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         self.contourSize = len(self.contours[0])
 
