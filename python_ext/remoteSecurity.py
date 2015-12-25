@@ -11,7 +11,7 @@ def setImages(cam, control):
     image2 = cam.getGreyFrame2().copy()
     control.setImage1(image1)
     control.setImage2(image2)
-    control.thresholdCalc()
+
 
 def showExtra(cam, control):
     control.showThresholdImage()
@@ -22,7 +22,10 @@ def closeExtra(cam, control):
 
 def detectMotion(control):
     motionDetected = False
+    control.thresholdCalc()
     motionDetected = control.detectMotion()
+
+    #replace with text and dropbox api later
     if motionDetected == True:
         print "MOTION DETECTED!!"
 
