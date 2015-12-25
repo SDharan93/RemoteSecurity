@@ -46,8 +46,11 @@ class videoControl(object):
     def showVideoFeed2(self):
         cv2.imshow('Video Feed 2', self.frame2)
 
+    def destoryAll(self):
+        cv2.destroyAllWindows()
+
     def release(self):
         self.cap.release()
 
     def input(self):
-        return cv2.waitKey(10) & 0xFF
+        return cv2.waitKey(10)

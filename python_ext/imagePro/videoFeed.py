@@ -8,6 +8,7 @@ class videoFeed(object):
     greyImage1 = 0
     greyImage2 = 0
     ret = False
+    inputKey = ' '
 
     def __init__(self):
         self.capture = videoControl()
@@ -43,5 +44,11 @@ class videoFeed(object):
     def close(self):
         self.capture.release()
 
-    def inputKey(self):
-        return self.capture.input()
+    def closeAll(self):
+        self.capture.destoryAll()
+
+    def checkInput(self):
+        self.inputKey = self.capture.input()
+
+    def getKey(self):
+        return self.inputKey

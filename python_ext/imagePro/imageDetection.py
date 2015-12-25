@@ -13,11 +13,26 @@ class imageDetection(object):
     def setImage1(self,image):
         self.control.setImage1(image)
 
-    def thresholdImage(self):
+    def showImage1(self):
+        self.control.showImage1()
+
+    def setImage2(self,image):
+        self.control.setImage2(image)
+
+    def showImage2(self):
+        self.control.showImage2()
+
+    def thresholdCalc(self):
         self.control.threshold()
         self.thresholdImage = self.control.getThresholdImage().copy()
 
-    def detectMotion(self, thresholdImage):
+    def showThresholdImage(self):
+        self.control.showThresholdImage()
+
+    def showDifferenceImage(self):
+        self.control.showDifferenceImage()
+
+    def detectMotion(self):
         self.motionDetected = False
-        self.control.findContours(self)
+        self.control.findContours()
         return self.control.isMotion()
