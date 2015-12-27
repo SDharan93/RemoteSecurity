@@ -1,5 +1,7 @@
 from imagePro import videoFeed
 from imagePro import imageDetection
+import common.dateTime as formatTime
+import common.var as var
 
 def snapShot(cam):
     cam.readCamera()
@@ -12,7 +14,6 @@ def setImages(cam, control):
     control.setImage1(image1)
     control.setImage2(image2)
 
-
 def showExtra(cam, control):
     control.showThresholdImage()
     control.showDifferenceImage()
@@ -24,13 +25,32 @@ def detectMotion(control):
     motionDetected = False
     control.thresholdCalc()
     motionDetected = control.detectMotion()
+    time = getTime()
 
     #replace with text and dropbox api later
     if motionDetected == True:
-        print "MOTION DETECTED!!"
+        print 'MOTION DETECTED at %s!!' % (time)
 
     else:
         print "NO MOTION"
+
+def getTime():
+    time = formatTime.getTime()
+    return time
+
+def getFileDateTime():
+    time = formatTime.getFileTime()
+    return time
+
+def userInput(key):
+    inputChar = chr(key & 255)
+    return inputChar
+
+def debugControl(debug, securityCam, imageControl):
+    debug = not(debug)
+    if debug == False:
+        closeExtra(securityCam, imageControl)
+    return debug
 
 def main():
     debug = False
@@ -54,17 +74,16 @@ def main():
         #inputs from user
         securityCam.checkInput()
         key = securityCam.getKey()
+        options = userInput(key)
 
         #check if input matches expected inputs
         #quit the program
-        if chr(key & 255) == 'q':
+        if options == var.QUIT:
             break
 
         #check if debug mode
-        elif chr(key & 255) == 'd':
-            debug = not(debug)
-            if debug == False:
-                closeExtra(securityCam, imageControl)
+        elif options == var.DEBUG:
+            debug = debugControl(debug, securityCam, imageControl)
 
     #releases camera from the program
     securityCam.close()
