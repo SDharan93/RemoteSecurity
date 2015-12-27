@@ -1,6 +1,6 @@
 from imagePro import videoFeed
 from imagePro import imageDetection
-import common.dateTime as formatTime
+from common import dateTime
 import common.var as var
 
 class remote(object):
@@ -8,11 +8,15 @@ class remote(object):
     debug = False
     cam = 0
     control = 0
+    timer = 0
+    alert = False
+    run = True
 
     def __init__(self):
         self.debug = False
         self.cam = videoFeed()
         self.control = imageDetection()
+        self.timer = dateTime()
 
     def snapShot(self):
         self.cam.readCamera()
@@ -37,19 +41,20 @@ class remote(object):
         motionDetected = self.control.detectMotion()
         time = self.getTime()
 
+        #check if the time has passed the user specification
+        self.alert = self.timer.isPassedTime()
+
         #replace with text and dropbox api later
         if motionDetected == True:
-            print 'MOTION DETECTED at %s!!' % (time)
-
-        else:
-            print "NO MOTION"
+            if self.alert == True:
+                print 'MOTION DETECTED at %s' % (time)
 
     def getTime(self):
-        time = formatTime.getTime()
+        time = self.timer.getTime()
         return time
 
     def getFileDateTime(self):
-        time = formatTime.getFileTime()
+        time = self.timer.getFileTime()
         return time
 
     def userInput(self, key):
@@ -62,7 +67,13 @@ class remote(object):
             self.closeExtra()
         return debug
 
-    def main(self):
+    def start(self):
+        self.run = True
+
+    def stop(self):
+        self.run = False
+
+    def run(self):
         debug = False
 
         while(True):
@@ -84,7 +95,7 @@ class remote(object):
             key = self.cam.getKey()
             options = self.userInput(key)
 
-            #check if input matches expected inputs
+            #check if input matches expected inputs from computer
             #quit the program
             if options == var.QUIT:
                 break
@@ -93,9 +104,13 @@ class remote(object):
             elif options == var.DEBUG:
                 debug = self.debugControl(debug)
 
-        #releases camera from the program
+            #check if user messaged stop
+            if self.run == False:
+                break
+
+        #releases camera from the program and stop program
         self.cam.close()
 
 if __name__ == "__main__":
     security = remote()
-    security.main()
+    security.run()
