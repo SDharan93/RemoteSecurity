@@ -27,6 +27,5 @@ class dateTime(object):
         #if the timer is passed the pause time, notify user
         diff = self.timeNow >= self.passedTime
         if diff == True:
-            print "passed pause time"
             self.pauseTime()
         return diff

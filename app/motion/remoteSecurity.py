@@ -2,21 +2,18 @@ from imagePro import videoFeed
 from imagePro import imageDetection
 from common import dateTime
 import common.var as var
+from messenger import notify
+from threading import Thread
 
 class remote(object):
-
-    debug = False
-    cam = 0
-    control = 0
-    timer = 0
-    alert = False
-    run = True
 
     def __init__(self):
         self.debug = False
         self.cam = videoFeed()
         self.control = imageDetection()
         self.timer = dateTime()
+        self.alert = False
+        self.running = False
 
     def snapShot(self):
         self.cam.readCamera()
@@ -27,6 +24,19 @@ class remote(object):
         image2 = self.cam.getGreyFrame2().copy()
         self.control.setImage1(image1)
         self.control.setImage2(image2)
+
+    def capture(self):
+        #capture frame by fraame
+        self.snapShot()
+        #transfer data and calculate threshold images
+        self.setImages()
+        #search for motion within camera range
+        self.detectMotion()
+        #debug mode for program
+        if debug == True:
+            self.showExtra()
+        #inputs from user
+        self.cam.checkInput()
 
     def showExtra(self):
         self.control.showThresholdImage()
@@ -47,7 +57,9 @@ class remote(object):
         #replace with text and dropbox api later
         if motionDetected == True:
             if self.alert == True:
+                #change to twilio send message
                 print 'MOTION DETECTED at %s' % (time)
+                self.message()
 
     def getTime(self):
         time = self.timer.getTime()
@@ -57,7 +69,8 @@ class remote(object):
         time = self.timer.getFileTime()
         return time
 
-    def userInput(self, key):
+    def userInput(self):
+        key = self.cam.getKey()
         inputChar = chr(key & 255)
         return inputChar
 
@@ -67,47 +80,33 @@ class remote(object):
             self.closeExtra()
         return debug
 
+    def message(self):
+        thread = Thread(target = notify.alert())
+        thread.daemon = True
+        thread.start()
+
     def start(self):
-        self.run = True
+        self.running = True
 
     def stop(self):
-        self.run = False
+        self.running = False
 
     def run(self):
         debug = False
 
         while(True):
-            #capture frame by fraame
-            self.snapShot()
-
-            #transfer data and calculate threshold images
-            self.setImages()
-
-            #search for motion within camera range
-            self.detectMotion()
-
-            #debug mode for program
-            if debug == True:
-                self.showExtra()
-
-            #inputs from user
-            self.cam.checkInput()
-            key = self.cam.getKey()
-            options = self.userInput(key)
-
+            self.capture()
+            options = self.userInput()
             #check if input matches expected inputs from computer
             #quit the program
             if options == var.QUIT:
                 break
-
             #check if debug mode
             elif options == var.DEBUG:
                 debug = self.debugControl(debug)
-
             #check if user messaged stop
-            if self.run == False:
+            if self.running == False:
                 break
-
         #releases camera from the program and stop program
         self.cam.close()
 
