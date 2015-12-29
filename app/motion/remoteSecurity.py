@@ -13,7 +13,7 @@ class remote(object):
         self.control = imageDetection()
         self.timer = dateTime()
         self.alert = False
-        self.running = False
+        self.running = True
 
     def snapShot(self):
         self.cam.readCamera()
@@ -33,7 +33,7 @@ class remote(object):
         #search for motion within camera range
         self.detectMotion()
         #debug mode for program
-        if debug == True:
+        if self.debug == True:
             self.showExtra()
         #inputs from user
         self.cam.checkInput()
@@ -92,7 +92,7 @@ class remote(object):
         self.running = False
 
     def run(self):
-        debug = False
+
 
         while(True):
             self.capture()
@@ -103,7 +103,7 @@ class remote(object):
                 break
             #check if debug mode
             elif options == var.DEBUG:
-                debug = self.debugControl(debug)
+                self.debug = self.debugControl(self.debug)
             #check if user messaged stop
             if self.running == False:
                 break
