@@ -1,19 +1,11 @@
-CXX ?= g++
+FLASK += python app/runServer.py &
+DETECT += python app/runApp.py &
 
-CXXFLAGS += -c -Wall -g -std=c++0x -pthread $(shell pkg-config --cflags opencv)
-LDFLAGS += $(shell pkg-config --libs --static opencv)
-PYLINK += -I/usr/include/python2.7
-PYLIB += -lpython2.7
-
-all: install
+all: run
 
 build: remoteSecurity;
 
-remoteSecurity: remoteSecurity.o;
-	$(CXX) $(PYLINK) $< -o $@ $(LDFLAGS) $(PYLIB)
-
-remoteSecurity.o: remoteSecurity.cpp;
-	$(CXX) $< -o $@ $(CXXFLAGS)
+run: app/runApp.py app/runServer.py;
 
 clean: ; rm -f remoteSecurity.o remoteSecurity
 
