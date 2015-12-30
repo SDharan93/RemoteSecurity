@@ -3,9 +3,8 @@ from imagePro import imageDetection
 from common import dateTime
 import common.var as var
 from messenger import notify
-from threading import Thread
 
-class remote(object):
+class sensor(object):
 
     def __init__(self):
         self.debug = False
@@ -59,7 +58,7 @@ class remote(object):
             if self.alert == True:
                 #change to twilio send message
                 print 'MOTION DETECTED at %s' % (time)
-                self.message()
+                #self.message()
 
     def getTime(self):
         time = self.timer.getTime()
@@ -91,12 +90,29 @@ class remote(object):
     def stop(self):
         self.running = False
 
+    def getRunning(self):
+        return self.running
+
+    def setRunning(self, stat):
+        self.running = stat
+
     def run(self):
-
-
         while(True):
             self.capture()
             options = self.userInput()
+
+            #check file if server had stopped program
+            try:
+                file = open("common/.response.txt", "r")
+                lines = file.read().splitlines()
+                #print lines[0]
+                file.close()
+                message = lines[0]
+
+            except:
+                print "ERROR: could not find file"
+                message = "nothin"
+
             #check if input matches expected inputs from computer
             #quit the program
             if options == var.QUIT:
@@ -104,12 +120,14 @@ class remote(object):
             #check if debug mode
             elif options == var.DEBUG:
                 self.debug = self.debugControl(self.debug)
+
             #check if user messaged stop
-            if self.running == False:
+            elif message == var.STOP:
                 break
+
         #releases camera from the program and stop program
         self.cam.close()
 
 if __name__ == "__main__":
-    security = remote()
-    security.run()
+    temp = sensor()
+    temp.run()
