@@ -1,10 +1,11 @@
 from imagePro import videoFeed
 from imagePro import imageDetection
 from common import dateTime
+from messenger import notify
+from threading import Thread
 import common.var as var
 import sys
 import select
-from messenger import notify
 
 class sensor(object):
 
@@ -19,7 +20,7 @@ class sensor(object):
     #reads two frames from the camera
     def snapShot(self):
         self.cam.readCamera()
-        #self.cam.showFrame1()
+        self.cam.showFrame1()
 
     #transfers two frames to the control class
     def setImages(self):
