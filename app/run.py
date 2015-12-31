@@ -1,28 +1,39 @@
 from flask import Flask, request, redirect
+import os
 import twilio.twiml as twiml
 import motion.common.var as var
 from status import runningStat
+from subprocess import call, Popen, PIPE
 
 app = Flask(__name__)
 #used to keep track of state of the program
 running = runningStat()
 
+#starts the detection program
 def runApp():
+    #will only start program once
     if running.getRunning() == False:
-        print "start Processes"
         running.setRunning(True)
-        file = open("motion/common/.response.txt", "w")
-        file.write("Zelda")
-        file.close()
+        #checks if the detection program exists
+        if os.path.exists('launcher.py'):
+            global process
+            #launches the process for motion detection
+            process = Popen(['python', 'launcher.py'], stdin=PIPE, stdout=PIPE)
+            #flushes stdin for process so unneccessary data is not read
+            process.stdin.flush()
+            #sent for handshake
+            process.stdin.write('Zelda\n')
         return "started monitoring"
 
+#function stops the detection program
 def stopApp():
+    #if the program is already running
     if running.getRunning() == True:
-        print "stopping Processes"
         running.setRunning(False)
-        file = open("motion/common/.response.txt", "w")
-        file.write("Mario")
-        file.close()
+        global process
+        process.stdin.flush()
+        #Closes the motion detection program
+        print process.communicate("Mario\n")[0]
         return "stopped monitoring"
 
 @app.route("/", methods=['GET', 'POST'])
@@ -43,4 +54,6 @@ def response():
     return str(response)
 
 if __name__ == "__main__":
+    #used to track the detection process
+    global process
     app.run(debug = True)

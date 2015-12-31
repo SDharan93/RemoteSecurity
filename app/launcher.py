@@ -1,3 +1,4 @@
+#launcher for the motion detection program
 from motion import sensor
 
 class runApp(object):

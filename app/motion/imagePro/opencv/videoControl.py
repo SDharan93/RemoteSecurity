@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+#low level class for controlling camera
 class videoControl(object):
 
     cap = 0
@@ -12,6 +13,7 @@ class videoControl(object):
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
 
+    #reads next two frames and stores values + grey frames
     def read(self):
         ret, self.frame1 = self.cap.read()
         self.greyFrame1 = cv2.cvtColor(self.frame1, cv2.COLOR_BGR2GRAY)
@@ -46,11 +48,14 @@ class videoControl(object):
     def showVideoFeed2(self):
         cv2.imshow('Video Feed 2', self.frame2)
 
+    #destorys all windows
     def destoryAll(self):
         cv2.destroyAllWindows()
 
+    #releases camera from program
     def release(self):
         self.cap.release()
 
+    #gets keyboard input from user
     def input(self):
         return cv2.waitKey(10)

@@ -1,3 +1,5 @@
+#class is responsible for tracking if a program is running in run.py
+#essentially just tracks boolean Running and toggles
 class runningStat(object):
 
     def __init__(self):

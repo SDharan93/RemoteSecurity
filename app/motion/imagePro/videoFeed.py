@@ -1,5 +1,5 @@
 from opencv import videoControl
-
+#higher level video class to interact with sensor.py
 class videoFeed(object):
 
     capture = 0
@@ -13,6 +13,7 @@ class videoFeed(object):
     def __init__(self):
         self.capture = videoControl()
 
+    #takes two frames from camera and stores grey values as well
     def snapShot(self):
         self.frame1 = self.capture.getFrame1()
         self.frame2 = self.capture.getFrame2()
@@ -31,22 +32,28 @@ class videoFeed(object):
     def getGreyFrame2(self):
         return self.greyImage2
 
+    #capture the next 2 frames
     def readCamera(self):
         self.capture.read()
         self.snapShot()
 
+    #displays frame one in new window
     def showFrame1(self):
         self.capture.showVideoFeed1()
 
+    #displays frame two in new window
     def showFrame2(self):
         self.capture.showVideoFeed2()
 
+    #release the camera
     def close(self):
         self.capture.release()
 
+    #destory all windows
     def closeAll(self):
         self.capture.destoryAll()
 
+    #check keyboard input from user
     def checkInput(self):
         self.inputKey = self.capture.input()
 

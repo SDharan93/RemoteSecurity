@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+#low level image processing for detection
 class imageControl(object):
 
     #image properities
@@ -23,6 +24,7 @@ class imageControl(object):
     def getImage1(self):
         return self.image1
 
+    #show frame 1 in a new window
     def showImage1(self):
         cv2.imshow('image 1 video feed 1', self.image1)
 
@@ -32,27 +34,33 @@ class imageControl(object):
     def getImage2(self):
         return self.image2
 
+    #show frame 2 in a new window
     def showImage2(self):
         cv2.imshow('video feed 2', self.image2)
 
+    #calculate the difference image
     def difference(self):
         self.differenceImage = cv2.absdiff(self.image1, self.image2).copy()
 
     def getDifferenceImage(self):
         return self.differenceImage
 
+    #show the difference image in a new window
     def showDifferenceImage(self):
         cv2.imshow('Difference Image Feed', self.differenceImage)
 
+    #calculate the threshold image
     def threshold(self):
         self.difference()
         self.calcThresholdImage(self.differenceImage)
+        #filters image so it is not as sensitive
         self.blurImage()
         self.calcThresholdImage(self.thresholdImage)
 
     def getThresholdImage(self):
         return self.thresholdImage
 
+    #shows threshold in a new window
     def showThresholdImage(self):
         cv2.imshow('threshold feed', self.thresholdImage)
 
@@ -72,6 +80,7 @@ class imageControl(object):
     def blurImage(self):
         self.thresholdImage = cv2.blur(self.thresholdImage, (self.BLUR_SIZE, self.BLUR_SIZE))
 
+    #calculates if image is in motion or not
     def isMotion(self):
         if self.contourSize > 0:
             self.motionDetected = True
