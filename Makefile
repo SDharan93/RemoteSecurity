@@ -1,11 +1,10 @@
-FLASK += python app/runServer.py &
-DETECT += python app/runApp.py &
+FLASK += python app/run.py &
 
 all: run
 
 build: remoteSecurity;
 
-run: app/runApp.py app/runServer.py;
+run: app/run.py;
 
 clean: ; rm -f remoteSecurity.o remoteSecurity
 
